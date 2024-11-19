@@ -1,8 +1,10 @@
-import org.junit.jupiter.api.Test
+package com.example.simpleAccountService
+
+import org.junit.Assert.assertEquals
+import org.junit.Test
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.UUID
-import kotlin.test.assertEquals
 
 
 class MainKtTest {
@@ -137,7 +139,7 @@ class MainKtTest {
                     matchCount++
                 }
             }
-            matches.put(relation.key,matchCount)
+            matches[relation.key] = matchCount
         }
         val sortedMatches = matches.entries.sortedByDescending { it.value }
 
