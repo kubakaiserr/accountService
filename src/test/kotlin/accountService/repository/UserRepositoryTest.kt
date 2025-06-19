@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import java.util.*
 
 @DataJpaTest
 class UserRepositoryTest {
@@ -22,7 +23,7 @@ class UserRepositoryTest {
 
     @Test
     fun `findById should return empty when user does not exist`() {
-        val foundUser = userRepository.findById(999L).orElse(null)
+        val foundUser = userRepository.findById(UUID.fromString("00000000-0000-0000-0000-000000000001")).orElse(null)
         assertNull(foundUser)
     }
 

@@ -12,6 +12,7 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
+import java.util.*
 
 @WebMvcTest(UserController::class)
 class UserControllerTest {
@@ -26,8 +27,8 @@ class UserControllerTest {
     @Test
     fun `getAllUsers should return list of users`() {
         val users = listOf(
-            UserDTO(id = 1L, name = "User 1"),
-            UserDTO(id = 2L, name = "User 2")
+            UserDTO(id = UUID.randomUUID(), name = "User 1"),
+            UserDTO(id = UUID.randomUUID(), name = "User 2")
         )
         `when`(userService.getAllUsers()).thenReturn(users)
 
@@ -39,26 +40,26 @@ class UserControllerTest {
 
     @Test
     fun `getUserById should return user with given ID`() {
-        val user = UserDTO(id = 1L, name = "User 1")
-        `when`(userService.getUserById(1L)).thenReturn(user)
+        val user = UserDTO(id = UUID.fromString("00000000-0000-0000-0000-000000000001"), name = "User 1")
+        `when`(userService.getUserById(UUID.fromString("00000000-0000-0000-0000-000000000001"))).thenReturn(user)
 
-        mockMvc.perform(get("/users/1"))
+        mockMvc.perform(get("/users/00000000-0000-0000-0000-000000000001"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.name").value("User 1"))
     }
 
     @Test
     fun `getUserById should return 404 when user with given ID does not exist`() {
-        `when`(userService.getUserById(1L)).thenThrow(UserNotFoundException("User with ID 1 not found"))
+        `when`(userService.getUserById(UUID.fromString("00000000-0000-0000-0000-000000000001"))).thenThrow(UserNotFoundException("User with ID 00000000-0000-0000-0000-000000000001 not found"))
 
-        mockMvc.perform(get("/users/1"))
+        mockMvc.perform(get("/users/00000000-0000-0000-0000-000000000001"))
             .andExpect(status().isNotFound)
-            .andExpect(content().string("User with ID 1 not found"))
+            .andExpect(content().string("User with ID 00000000-0000-0000-0000-000000000001 not found"))
     }
 
     @Test
     fun `createUser should save and return UserDTO`() {
-        val user = UserDTO(id = 1L, name = "User 1")
+        val user = UserDTO(id = UUID.randomUUID(), name = "User 1")
         val newUser = UserCreationDTO(name = "User 1")
         `when`(userService.registerUser(newUser)).thenReturn(user)
 
@@ -72,10 +73,10 @@ class UserControllerTest {
 
     @Test
     fun `updateUserName should return updated user`() {
-        val user = UserDTO(id = 1L, name = "User 1")
-        `when`(userService.updateUserName(1L, "User 2")).thenReturn(user)
+        val user = UserDTO(id = UUID.fromString("00000000-0000-0000-0000-000000000001"), name = "User 1")
+        `when`(userService.updateUserName(UUID.fromString("00000000-0000-0000-0000-000000000001"), "User 2")).thenReturn(user)
 
-        mockMvc.perform(put("/users/1/name")
+        mockMvc.perform(put("/users/00000000-0000-0000-0000-000000000001/name")
             .contentType("application/json")
             .content("{\"name\": \"User 2\"}")
         )
@@ -85,29 +86,29 @@ class UserControllerTest {
 
     @Test
     fun `deleteUser should return 204`() {
-        mockMvc.perform(delete("/users/1"))
+        mockMvc.perform(delete("/users/00000000-0000-0000-0000-000000000001"))
             .andExpect(status().isNoContent)
     }
 
     @Test
     fun `deleteUser should return 404 when user with given ID does not exist`() {
-        `when`(userService.deleteUser(1L)).thenThrow(UserNotFoundException("User with ID 1 not found"))
+        `when`(userService.deleteUser(UUID.fromString("00000000-0000-0000-0000-000000000001"))).thenThrow(UserNotFoundException("User with ID 00000000-0000-0000-0000-000000000001 not found"))
 
-        mockMvc.perform(delete("/users/1"))
+        mockMvc.perform(delete("/users/00000000-0000-0000-0000-000000000001"))
             .andExpect(status().isNotFound)
-            .andExpect(content().string("User with ID 1 not found"))
+            .andExpect(content().string("User with ID 00000000-0000-0000-0000-000000000001 not found"))
     }
 
     @Test
     fun `updateUserName should return 404 when user with given ID does not exist`() {
-        `when`(userService.updateUserName(1L, "User 2")).thenThrow(UserNotFoundException("User with ID 1 not found"))
+        `when`(userService.updateUserName(UUID.fromString("00000000-0000-0000-0000-000000000001"), "User 2")).thenThrow(UserNotFoundException("User with ID 00000000-0000-0000-0000-000000000001 not found"))
 
-        mockMvc.perform(put("/users/1/name")
+        mockMvc.perform(put("/users/00000000-0000-0000-0000-000000000001/name")
             .contentType("application/json")
             .content("{\"name\": \"User 2\"}")
         )
             .andExpect(status().isNotFound)
-            .andExpect(content().string("User with ID 1 not found"))
+            .andExpect(content().string("User with ID 00000000-0000-0000-0000-000000000001 not found"))
     }
 
 }

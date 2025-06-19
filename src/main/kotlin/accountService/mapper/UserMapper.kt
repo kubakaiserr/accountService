@@ -7,7 +7,7 @@ import accountService.dto.UserDTO
 
     fun User.toDTO(): UserDTO {
         return UserDTO(
-            id = this.id,
+            id = this.id ?: throw IllegalStateException("User ID cannot be null"),
             name = this.name
         )
     }

@@ -29,7 +29,7 @@ class BankAccountServiceTest {
 
     @Test
     fun `getAccountById should return BankAccountDTO when account exists`() {
-        val user = User(id = 1L, name = "Test User")
+        val user = User(id = UUID.randomUUID(), name = "Test User")
         val account = BankAccount(id = 1L, name = "Account 1", balance = 100.0, user = user)
         `when`(bankAccountRepository.findById(1L)).thenReturn(Optional.of(account))
 
@@ -42,10 +42,10 @@ class BankAccountServiceTest {
 
     @Test
     fun `createAccount should save and return BankAccountDTO when user exists`() {
-        val user = User(id = 1L, name = "Test User")
-        val accountCreationDTO = BankAccountCreationDTO(userId = 1L, name = "Test Account", balance = 100.0)
+        val user = User(id = UUID.fromString("00000000-0000-0000-0000-000000000001"), name = "Test User")
+        val accountCreationDTO = BankAccountCreationDTO(userId = UUID.fromString("00000000-0000-0000-0000-000000000001"), name = "Test Account", balance = 100.0)
         val bankAccount = BankAccount(id = 1L, name = "Test Account", balance = 100.0, user = user)
-        `when`(userRepository.findById(1L)).thenReturn(Optional.of(user))
+        `when`(userRepository.findById(UUID.fromString("00000000-0000-0000-0000-000000000001"))).thenReturn(Optional.of(user))
         `when`(bankAccountRepository.save(any(BankAccount::class.java))).thenReturn(bankAccount)
 
         val result = bankAccountService.createAccount(accountCreationDTO)
@@ -57,14 +57,14 @@ class BankAccountServiceTest {
 
     @Test
     fun `createAccount should throw UserNotFoundException when user does not exist`() {
-        val accountCreationDTO = BankAccountCreationDTO(userId = 1L, name = "Test Account", balance = 100.0)
-        `when`(userRepository.findById(1L)).thenThrow(UserNotFoundException("User with ID 1 not found"))
+        val accountCreationDTO = BankAccountCreationDTO(userId = UUID.fromString("00000000-0000-0000-0000-000000000001"), name = "Test Account", balance = 100.0)
+        `when`(userRepository.findById(UUID.randomUUID())).thenThrow(UserNotFoundException("User with ID 00000000-0000-0000-0000-000000000001 not found"))
 
         val exception = assertThrows<UserNotFoundException> {
             bankAccountService.createAccount(accountCreationDTO)
         }
 
-        assertEquals("User with ID 1 not found", exception.message)
+        assertEquals("User with ID 00000000-0000-0000-0000-000000000001 not found", exception.message)
     }
 
     @Test
@@ -80,7 +80,7 @@ class BankAccountServiceTest {
 
     @Test
     fun `updateAccountName should save and return BankAccountDTO when account exists`() {
-        val account = BankAccount(id = 1L, name = "Test Account", balance = 100.0, user = User(id = 1L, name = "Test User"))
+        val account = BankAccount(id = 1L, name = "Test Account", balance = 100.0, user = User(id = UUID.randomUUID(), name = "Test User"))
         `when`(bankAccountRepository.findById(1L)).thenReturn(Optional.of(account))
         `when`(bankAccountRepository.save(any(BankAccount::class.java))).thenReturn(account)
 
@@ -104,7 +104,7 @@ class BankAccountServiceTest {
 
     @Test
     fun `updateAccountBalance should save and return BankAccountDTO when account exists`() {
-        val account = BankAccount(id = 1L, name = "Test Account", balance = 100.0, user = User(id = 1L, name = "Test User"))
+        val account = BankAccount(id = 1L, name = "Test Account", balance = 100.0, user = User(id = UUID.randomUUID(), name = "Test User"))
         `when`(bankAccountRepository.findById(1L)).thenReturn(Optional.of(account))
         `when`(bankAccountRepository.save(any(BankAccount::class.java))).thenReturn(account)
 
@@ -128,7 +128,7 @@ class BankAccountServiceTest {
 
     @Test
     fun `deleteAccount should delete account when account exists`() {
-        val account = BankAccount(id = 1L, name = "Test Account", balance = 100.0, user = User(id = 1L, name = "Test User"))
+        val account = BankAccount(id = 1L, name = "Test Account", balance = 100.0, user = User(id = UUID.randomUUID(), name = "Test User"))
         `when`(bankAccountRepository.findById(1L)).thenReturn(Optional.of(account))
 
         bankAccountService.deleteAccount(1L)
@@ -138,26 +138,26 @@ class BankAccountServiceTest {
 
     @Test
     fun `getAccountsByUserId should throw UserNotFoundException when user does not exist`() {
-        `when`(userRepository.findById(1L)).thenThrow(UserNotFoundException("User with ID 1 not found"))
+        `when`(userRepository.findById(UUID.fromString("00000000-0000-0000-0000-000000000001"))).thenThrow(UserNotFoundException("User with ID 00000000-0000-0000-0000-000000000001 not found"))
 
         val exception = assertThrows<UserNotFoundException> {
-            bankAccountService.getAccountsByUserId(1L)
+            bankAccountService.getAccountsByUserId(UUID.fromString("00000000-0000-0000-0000-000000000001"))
         }
 
-        assertEquals("User with ID 1 not found", exception.message)
+        assertEquals("User with ID 00000000-0000-0000-0000-000000000001 not found", exception.message)
     }
 
     @Test
     fun `getAccountsByUserId should return list of BankAccountDTO when user exists`() {
-        val user = User(id = 1L, name = "Test User")
+        val user = User(id = UUID.fromString("00000000-0000-0000-0000-000000000001"), name = "Test User")
         val accounts = listOf(
             BankAccount(id = 1L, name = "Account 1", balance = 100.0, user = user),
             BankAccount(id = 2L, name = "Account 2", balance = 200.0, user = user)
         )
-        `when`(userRepository.findById(1L)).thenReturn(Optional.of(user))
-        `when`(bankAccountRepository.findByUserId(1L)).thenReturn(accounts)
+        `when`(userRepository.findById(UUID.fromString("00000000-0000-0000-0000-000000000001"))).thenReturn(Optional.of(user))
+        `when`(bankAccountRepository.findByUserId(UUID.fromString("00000000-0000-0000-0000-000000000001"))).thenReturn(accounts)
 
-        val result = bankAccountService.getAccountsByUserId(1L)
+        val result = bankAccountService.getAccountsByUserId(UUID.fromString("00000000-0000-0000-0000-000000000001"))
 
         assertNotNull(result)
         assertEquals(2, result.size)
@@ -181,8 +181,8 @@ class BankAccountServiceTest {
     @Test
     fun `getAllAccounts should return list of BankAccountDTO`() {
         val accounts = listOf(
-            BankAccount(id = 1L, name = "Account 1", balance = 100.0, user = User(id = 1L, name = "Test User")),
-            BankAccount(id = 2L, name = "Account 2", balance = 200.0, user = User(id = 1L, name = "Test User"))
+            BankAccount(id = 1L, name = "Account 1", balance = 100.0, user = User(id = UUID.randomUUID(), name = "Test User")),
+            BankAccount(id = 2L, name = "Account 2", balance = 200.0, user = User(id = UUID.randomUUID(), name = "Test User"))
         )
         val sort = Sort.by(Sort.Direction.ASC, "id")
         `when`(bankAccountRepository.findAll(sort)).thenReturn(accounts)
@@ -207,8 +207,8 @@ class BankAccountServiceTest {
     @Test
     fun `getAllAccounts should return list of BankAccountDTO sorted by name in ascending order`() {
         val accounts = listOf(
-            BankAccount(id = 1L, name = "Account 2", balance = 100.0, user = User(id = 1L, name = "Test User")),
-            BankAccount(id = 2L, name = "Account 1", balance = 200.0, user = User(id = 1L, name = "Test User"))
+            BankAccount(id = 1L, name = "Account 2", balance = 100.0, user = User(id = UUID.randomUUID(), name = "Test User")),
+            BankAccount(id = 2L, name = "Account 1", balance = 200.0, user = User(id = UUID.randomUUID(), name = "Test User"))
         )
         val sortedAccounts = accounts.sortedBy { it.name }
         val sort = Sort.by(Sort.Direction.ASC, "name")
@@ -227,8 +227,8 @@ class BankAccountServiceTest {
     @Test
     fun `getAllAccounts should return list of BankAccountDTO sorted by name in descending order`() {
         val accounts = listOf(
-            BankAccount(id = 1L, name = "Account 1", balance = 100.0, user = User(id = 1L, name = "Test User")),
-            BankAccount(id = 2L, name = "Account 2", balance = 200.0, user = User(id = 1L, name = "Test User"))
+            BankAccount(id = 1L, name = "Account 1", balance = 100.0, user = User(id = UUID.randomUUID(), name = "Test User")),
+            BankAccount(id = 2L, name = "Account 2", balance = 200.0, user = User(id = UUID.randomUUID(), name = "Test User"))
         )
         val sortedAccounts = accounts.sortedByDescending { it.name }
         val sort = Sort.by(Sort.Direction.DESC, "name")
@@ -249,8 +249,8 @@ class BankAccountServiceTest {
     @Test
     fun `getAllAccounts should return list of BankAccountDTO sorted by balance in ascending order`() {
         val accounts = listOf(
-            BankAccount(id = 1L, name = "Account 1", balance = 200.0, user = User(id = 1L, name = "Test User")),
-            BankAccount(id = 2L, name = "Account 2", balance = 100.0, user = User(id = 1L, name = "Test User"))
+            BankAccount(id = 1L, name = "Account 1", balance = 200.0, user = User(id = UUID.randomUUID(), name = "Test User")),
+            BankAccount(id = 2L, name = "Account 2", balance = 100.0, user = User(id = UUID.randomUUID(), name = "Test User"))
         )
         val sortedAccounts = accounts.sortedBy { it.balance }
         val sort = Sort.by(Sort.Direction.ASC, "balance")
@@ -269,8 +269,8 @@ class BankAccountServiceTest {
     @Test
     fun `getAllAccounts should return list of BankAccountDTO sorted by balance in descending order`() {
         val accounts = listOf(
-            BankAccount(id = 1L, name = "Account 1", balance = 100.0, user = User(id = 1L, name = "Test User")),
-            BankAccount(id = 2L, name = "Account 2", balance = 200.0, user = User(id = 1L, name = "Test User"))
+            BankAccount(id = 1L, name = "Account 1", balance = 100.0, user = User(id = UUID.randomUUID(), name = "Test User")),
+            BankAccount(id = 2L, name = "Account 2", balance = 200.0, user = User(id = UUID.randomUUID(), name = "Test User"))
         )
         val sortedAccounts = accounts.sortedByDescending { it.balance }
         val sort = Sort.by(Sort.Direction.DESC, "balance")

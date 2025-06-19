@@ -1,16 +1,19 @@
 package accountService.model
 
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.Table
+import jakarta.persistence.*
+import java.util.UUID
 
 @Entity
 @Table(name = "`user`")
 data class User(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
-    var name: String
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    val id: UUID? = null,
+    var name: String,
+
+    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val bankAccounts: List<BankAccount> = mutableListOf(),
+
+    @Version
+    val version: Long? = null
 )

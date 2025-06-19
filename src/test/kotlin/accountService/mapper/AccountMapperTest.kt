@@ -7,12 +7,13 @@ import accountService.model.User
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 import org.mockito.Mockito
+import java.util.*
 
 @SpringBootTest
 class AccountMapperTest {
 
-    val testUser = User(id = 1L, name = "Test User")
-    val testuserDTO = UserDTO(id = 1L, name = "Test User")
+    val testUser = User(id = UUID.randomUUID(), name = "Test User")
+    val testuserDTO = UserDTO(id = UUID.randomUUID(), name = "Test User")
 
 
     @Test

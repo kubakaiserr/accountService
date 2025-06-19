@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
 import org.springframework.boot.test.context.SpringBootTest
+import java.util.*
 
 @SpringBootTest
 class UserServiceTest {
@@ -18,9 +19,10 @@ class UserServiceTest {
 
     @Test
     fun `registerUser should save and return UserDTO`() {
-        val userCreationDTO = UserCreationDTO(name = "Test User")
-        val user = User(name = "Test User")
-        Mockito.`when`(userRepository.save(user)).thenReturn(user)
+        val userCreationDTO = UserCreationDTO(name = "Test User", id = "00000000-0000-0000-0000-000000000001")
+        val user = User(name = "Test User", id = UUID.fromString("00000000-0000-0000-0000-000000000001"))
+//        Mockito.`when`(userRepository.save(user)).thenReturn(user)
+        Mockito.`when`(userRepository.save(Mockito.any(User::class.java))).thenReturn(user)
 
         val result = userService.registerUser(userCreationDTO)
 
@@ -30,8 +32,8 @@ class UserServiceTest {
     @Test
     fun `getAllUsers should return list of UserDTOs`() {
         val users = listOf(
-            User(id = 1L, name = "User 1"),
-            User(id = 2L, name = "User 2")
+            User(id = UUID.randomUUID(), name = "User 1"),
+            User(id = UUID.randomUUID(), name = "User 2")
         )
         Mockito.`when`(userRepository.findAll()).thenReturn(users)
 
@@ -44,20 +46,20 @@ class UserServiceTest {
 
     @Test
     fun `getUserById should return UserDTO with given ID`() {
-        val user = User(id = 1L, name = "User 1")
-        Mockito.`when`(userRepository.findById(1L)).thenReturn(java.util.Optional.of(user))
+        val user = User(id = UUID.fromString("00000000-0000-0000-0000-000000000001"), name = "User 1")
+        Mockito.`when`(userRepository.findById(UUID.fromString("00000000-0000-0000-0000-000000000001"))).thenReturn(java.util.Optional.of(user))
 
-        val result = userService.getUserById(1L)
+        val result = userService.getUserById(UUID.fromString("00000000-0000-0000-0000-000000000001"))
 
         assert(result?.name == "User 1")
     }
 
     @Test
     fun `getUserById should throw UserNotFoundException when user with given ID does not exist`() {
-        Mockito.`when`(userRepository.findById(1L)).thenThrow(UserNotFoundException("User with ID 1 not found"))
+        Mockito.`when`(userRepository.findById(UUID.randomUUID())).thenThrow(UserNotFoundException("User with ID 1 not found"))
 
         assertThrows<UserNotFoundException> {
-            userService.getUserById(1L)
+            userService.getUserById(UUID.randomUUID())
 
 
         }
@@ -65,37 +67,37 @@ class UserServiceTest {
 
     @Test
     fun `updateUserName should update and return UserDTO`() {
-        val user = User(id = 1L, name = "User 1")
-        Mockito.`when`(userRepository.findById(1L)).thenReturn(java.util.Optional.of(user))
+        val user = User(id = UUID.fromString("00000000-0000-0000-0000-000000000001"), name = "User 1")
+        Mockito.`when`(userRepository.findById(UUID.fromString("00000000-0000-0000-0000-000000000001"))).thenReturn(java.util.Optional.of(user))
         Mockito.`when`(userRepository.save(user)).thenReturn(user)
 
-        val result = userService.updateUserName(1L, "New Name")
+        val result = userService.updateUserName(UUID.fromString("00000000-0000-0000-0000-000000000001"), "New Name")
 
         assert(result?.name == "New Name")
     }
 
     @Test
     fun `updateUserName should throw UserNotFoundException when user with given ID does not exist`() {
-        Mockito.`when`(userRepository.findById(1L)).thenThrow(UserNotFoundException("User with ID 1 not found"))
+        Mockito.`when`(userRepository.findById(UUID.randomUUID())).thenThrow(UserNotFoundException("User with ID 1 not found"))
 
         assertThrows<UserNotFoundException> {
-            userService.updateUserName(1L, "New Name")
+            userService.updateUserName(UUID.randomUUID(), "New Name")
         }
     }
 
     @Test
     fun `deleteUser should delete user with given ID`() {
-        Mockito.doNothing().`when`(userRepository).deleteById(1L)
+        Mockito.doNothing().`when`(userRepository).deleteById(UUID.randomUUID())
 
-        userService.deleteUser(1L)
+        userService.deleteUser(UUID.randomUUID())
     }
 
     @Test
     fun `deleteUser should throw UserNotFoundException when user with given ID does not exist`() {
-        Mockito.doThrow(UserNotFoundException("User with ID 1 not found")).`when`(userRepository).deleteById(1L)
+        Mockito.doThrow(UserNotFoundException("User with ID 00000000-0000-0000-0000-000000000001 not found")).`when`(userRepository).deleteById(UUID.fromString("00000000-0000-0000-0000-000000000001"))
 
         assertThrows<UserNotFoundException> {
-            userService.deleteUser(1L)
+            userService.deleteUser(UUID.fromString("00000000-0000-0000-0000-000000000001"))
         }
     }
 

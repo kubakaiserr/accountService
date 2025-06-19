@@ -9,7 +9,10 @@ data class BankAccount(
     val id: Long = 0,
     var name: String,
     var balance: Double,
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    val user: User
+//    @ManyToOne
+//    @JoinColumn(name = "user_id")
+//    val user: User
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    val user: User,
 )
