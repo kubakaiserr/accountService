@@ -12,12 +12,19 @@ import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 import org.springframework.web.bind.annotation.*
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.web.bind.annotation.*
+import accountService.dto.AccountName
+import accountService.dto.AccountBalance
 
 @RestController
 @RequestMapping("/accounts")
+@Tag(name = "Accounts")
 class BankAccountController(private val service: BankAccountService) {
 
     @GetMapping
+    @Operation(summary = "Get All Accounts", description = "Retrieve all bank accounts with optional sorting")
     fun getAllAccounts(
         @RequestParam sortBy: String?,
         @RequestParam sortOrder: String?
@@ -60,11 +67,10 @@ class BankAccountController(private val service: BankAccountService) {
     }
 
 
-    data class AccountName(
-        @field:NotBlank(message = "Name must not be blank")
-        @field:Size(max = 50, message = "Name must not exceed 50 characters")
-        val name: String)
-    data class AccountBalance(
-        @field:NotBlank(message = "Balance must not be blank")
-        val balance: Double)
+//    data class AccountName(
+//        @field:NotBlank(message = "Name must not be blank")
+//        @field:Size(max = 50, message = "Name must not exceed 50 characters")
+//        val name: String)
+//    data class AccountBalance(
+//        val balance: Double)
 }

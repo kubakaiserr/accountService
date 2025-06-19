@@ -19,7 +19,7 @@ class UserServiceTest {
 
     @Test
     fun `registerUser should save and return UserDTO`() {
-        val userCreationDTO = UserCreationDTO(name = "Test User", id = "00000000-0000-0000-0000-000000000001")
+        val userCreationDTO = UserCreationDTO(name = "Test User")
         val user = User(name = "Test User", id = UUID.fromString("00000000-0000-0000-0000-000000000001"))
 //        Mockito.`when`(userRepository.save(user)).thenReturn(user)
         Mockito.`when`(userRepository.save(Mockito.any(User::class.java))).thenReturn(user)
